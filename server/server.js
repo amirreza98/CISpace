@@ -49,3 +49,26 @@ app.post('/api/reserve', async (req, res) => {
 // اجرای سرور
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+const mongoose = require('mongoose');
+
+dotenv.config();
+
+app.use(cors());
+app.use(express.json());
+
+// وصل شدن به دیتابیس
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log('✅ MongoDB وصل شد'))
+  .catch(err => console.error('❌ خطا در اتصال:', err));
+
+// روت تستی
+app.get('/', (req, res) => {
+  res.send('سرور فعاله ✅');
+});
+
+// اجرا
+app.listen(PORT, () => {
+  console.log(`🚀 سرور روی پورت ${PORT}`);
+});
