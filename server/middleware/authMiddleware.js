@@ -1,17 +1,18 @@
 const jwt = require('jsonwebtoken');
 
-function authMiddleware(req, res, next) {
-  const token = req.header('Authorization')?.split(' ')[1]; // فرض بر اینه که فرانت میفرسته: "Bearer token"
-
-  if (!token) return res.status(401).json({ msg: 'توکن وجود ندارد' });
-
+module.exports = function (req, res, next) {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ msg: 'توکن ارائه نشده' });
+    }
+
+    const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.adminId = decoded.id;
+
+    req.adminId = decoded.id; // برای استفاده بعدی
     next();
   } catch (err) {
-    res.status(401).json({ msg: 'توکن نامعتبر است' });
+    return res.status(401).json({ msg: 'توکن نامعتبر یا منقضی شده' });
   }
-}
-
-module.exports = authMiddleware;
+};

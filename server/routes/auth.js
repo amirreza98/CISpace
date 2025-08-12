@@ -1,44 +1,39 @@
 const express = require('express');
-const router = express.Router();
-const Admin = require('../models/Admin');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Admin = require('../models/Admin');
 
-// ثبت‌نام ادمین
-router.post('/register', async (req, res) => {
+const router = express.Router();
+
+// مسیر لاگین ادمین
+router.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const existing = await Admin.findOne({ username });
-    if (existing) return res.status(400).json({ msg: 'ادمین قبلاً ساخته شده' });
-
-    const hashed = await bcrypt.hash(password, 10);
-
-    const newAdmin = new Admin({ username, password: hashed });
-    await newAdmin.save();
-
-    res.status(201).json({ msg: 'ادمین ساخته شد' });
-  } catch (err) {
-    res.status(500).json({ msg: 'خطای سرور' });
-  }
-});
-
-// ورود ادمین
-router.post('/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
+    // 1. پیدا کردن ادمین
     const admin = await Admin.findOne({ username });
-    if (!admin) return res.status(400).json({ msg: 'ادمین پیدا نشد' });
+    if (!admin) {
+      return res.status(401).json({ message: 'نام کاربری اشتباه است' });
+    }
 
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) return res.status(400).json({ msg: 'رمز اشتباهه' });
+    // 2. مقایسه رمز عبور
+    const isMatch = await admin.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'رمز عبور اشتباه است' });
+    }
 
-    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    // 3. ساخت توکن JWT
+    const token = jwt.sign(
+      { id: admin._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
+    // 4. ارسال توکن به فرانت
     res.json({ token });
+
   } catch (err) {
-    res.status(500).json({ msg: 'خطای سرور' });
+    console.error(err);
+    res.status(500).json({ message: 'خطای سرور' });
   }
 });
 
