@@ -5,6 +5,10 @@ import Booking from './pages/Booking';
 import Confirmation from './pages/Confirmation';
 import Admin from './pages/Admin';
 import About from './pages/About';
+import AdminDashboard from './pages/AdminDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminLogin from './pages/AdminLogin';
+
 
 function App() {
   return (
@@ -13,6 +17,12 @@ function App() {
         <Route path="*" element={<Home />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/confirmation" element={<Confirmation />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={
+          <ProtectedRoute>
+              <AdminDashboard />
+          </ProtectedRoute>
+        } />
         <Route path="/admin" element={<Admin />} />
         <Route path="/about" element={<About />} />
         </Routes>
