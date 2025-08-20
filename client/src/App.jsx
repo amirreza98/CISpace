@@ -3,8 +3,6 @@ import { BrowserRouter } from 'react-router-dom'
 import Home from './pages/Home';
 import Booking from './pages/Booking';
 import Confirmation from './pages/Confirmation';
-import Admin from './pages/Admin';
-import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
@@ -23,8 +21,6 @@ function App() {
               <AdminDashboard />
           </ProtectedRoute>
         } />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/about" element={<About />} />
         </Routes>
     </BrowserRouter>
   );

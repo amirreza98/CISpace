@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { AnimatePresence, motion, time } from 'framer-motion';
 import LayoutView from '../components/LayoutView';
-import LayoutOverlay from '../components/LayoutOverlay';
 import { useNavigate } from 'react-router-dom';
 import ReservationTypeSelector from '../components/ReservationTypeSelector';
 import ReservationTimingSelector from '../components/ReservationTimingSelector';
@@ -20,7 +19,7 @@ function Booking() {
     setReservationData((prev) => ({ ...prev, type }));
 
     setTimeout(() => {
-      setShowTimingSelector(true); // نمایش فرم بعدی
+      setShowTimingSelector(true); 
     }, 1000);
   };
 
