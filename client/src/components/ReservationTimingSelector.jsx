@@ -17,7 +17,7 @@ const ReservationTimingSelector = ({ onSelect, onBack }) => {
     <div className="p-4 max-w-md bg-white/10 rounded-xl shadow-md text-white">
       <h2 className="text-xl font-bold text-center pb-4">When do you need the space?</h2>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {/* Date */}
         <div>
           <label className="block mb-1">Select Day:</label>
@@ -57,7 +57,7 @@ const ReservationTimingSelector = ({ onSelect, onBack }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-between pt-4">
+        <div className="flex justify-between pt-1">
           <button
             onClick={onBack}
             className="px-4 py-2 bg-gray-500 rounded hover:bg-gray-600 transition"

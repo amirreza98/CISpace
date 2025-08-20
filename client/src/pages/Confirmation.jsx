@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 function Confirmation() {
   const { state } = useLocation();
-  const reservationData = state?.reservationData;
+  const reservationData = state?.reservationData; // مطمئن شدیم اسم درست باشه
 
   const [email, setEmail] = useState('');
   const [bookingId, setBookingId] = useState('');
@@ -22,8 +22,9 @@ function Confirmation() {
       email,
       seat: reservationData.seat,
       type: reservationData.type,
-      time: reservationData.timing.date,
+      time: `${reservationData.timing.date} ${reservationData.timing.startTime}`,
       bookingId,
+      note: reservationData.note || null,
     };
 
     try {
@@ -60,13 +61,18 @@ function Confirmation() {
 
   return (
     <div className="max-w-md mx-auto p-6 mt-10 bg-white shadow-lg rounded-md">
-      <h2 className="text-2xl font-bold mb-4 text-center text-green-600">Reservation Confirmed!</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center text-green-600">
+        Reservation Confirmed!
+      </h2>
 
       <div className="space-y-2 text-gray-700">
         <p><strong>Booking ID:</strong> {bookingId}</p>
-        <p><strong>Seat:</strong> {reservationData.seat}</p>
-        <p><strong>Type:</strong> {reservationData.type}</p>
-        <p><strong>Time:</strong> {reservationData.timing.date} At {reservationData.timing.startTime}</p>
+        <p><strong>item:</strong> {reservationData.type} {reservationData.item}</p>
+        <p>
+          <strong>Time:</strong> {reservationData.timing.date} at {reservationData.timing.startTime} 
+          ({reservationData.timing.duration} hrs)
+        </p>
+        {reservationData.note && <p><strong>Note:</strong> {reservationData.note}</p>}
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">

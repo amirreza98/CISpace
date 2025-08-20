@@ -5,7 +5,7 @@ const ReservationTypeSelector = ({ onButtonClick }) => {
 
   const handleClick = (type) => {
     setSelected(type);
-    onButtonClick?.(type); // اگر onButtonClick وجود داشت، اجرا کن
+    onButtonClick?.(type); 
   };
 
   return (
@@ -13,7 +13,7 @@ const ReservationTypeSelector = ({ onButtonClick }) => {
       <h2 className="text-xl font-bold text-center pb-2">A Space For:</h2>
 
       <div className="flex flex-col gap-3">
-        {['Event', 'Room', 'Seat'].map((type) => (
+        {['Room', 'Seat', 'Gallery'].map((type) => (
           <button
             key={type}
             onClick={() => handleClick(type)}
