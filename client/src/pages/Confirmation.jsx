@@ -20,7 +20,7 @@ function Confirmation() {
 
     const payload = {
       email,
-      seat: reservationData.seat,
+      seat: reservationData.item,
       type: reservationData.type,
       time: `${reservationData.timing.date} ${reservationData.timing.startTime}`,
       bookingId,
@@ -28,7 +28,7 @@ function Confirmation() {
     };
 
     try {
-      const res = await fetch('http://localhost:5000/api/reserve', {
+      const res = await fetch('http://localhost:5001/api/reserve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

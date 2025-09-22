@@ -14,12 +14,13 @@ export default function AdminDashboard() {
 
   useEffect(() => { load(); }, []);
 
-  const approve = async (id) => {
-    await api.put(`/admin/reservations/${id}/approve`);
+  // approve/reject با مسیر جدید
+  const approve = async (r) => {
+    await api.put(`/admin/reservations/${r.collection}/${r.itemId}/approve`);
     load();
   };
-  const reject = async (id) => {
-    await api.put(`/admin/reservations/${id}/reject`);
+  const reject = async (r) => {
+    await api.put(`/admin/reservations/${r.collection}/${r.itemId}/reject`);
     load();
   };
   const logout = () => {
@@ -52,8 +53,8 @@ export default function AdminDashboard() {
           </thead>
           <tbody>
             {list.map(r => (
-              <tr key={r._id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2">{r.seat}</td>
+              <tr key={r.id} className="border-b hover:bg-gray-50">
+                <td className="px-4 py-2">{r.collection.replace('s','')} #{r.itemId}</td>
                 <td className="px-4 py-2">{r.email}</td>
                 <td className="px-4 py-2">
                   <span className={`px-3 py-1 rounded-lg text-sm ${
@@ -61,19 +62,19 @@ export default function AdminDashboard() {
                     r.status === 'rejected' ? 'bg-red-100 text-red-700' :
                     'bg-yellow-100 text-yellow-700'
                   }`}>
-                    {r.status}
+                    {r.status || 'pending'}
                   </span>
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button 
-                    onClick={()=>approve(r._id)} 
+                    onClick={()=>approve(r)} 
                     disabled={r.status==='approved'}
                     className="bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded-lg disabled:opacity-40"
                   >
                     Approve
                   </button>
                   <button 
-                    onClick={()=>reject(r._id)} 
+                    onClick={()=>reject(r)} 
                     disabled={r.status==='rejected'}
                     className="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded-lg disabled:opacity-40"
                   >

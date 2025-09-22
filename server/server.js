@@ -15,22 +15,27 @@ app.use(express.json());
 // 📌 روت رزرو + ذخیره در MongoDB + ارسال ایمیل
 app.post('/api/reserve', async (req, res) => {
   const { email, seat, type, time, bookingId, note } = req.body;
+  console.log('POST /api/reserve payload:', { email, seat, type, time, bookingId, note });
 
   try {
-    // 1️⃣ پیدا کردن layout
     const layout = await Reservation.findOne();
     if (!layout) {
-      return res.status(404).json({ error: 'Layout پیدا نشد' });
+      console.log('No layout found in DB');
+      return res.status(404).json({ error: 'Layout پیدا نشد (no layout document)' });
     }
 
-    // 2️⃣ پیدا کردن آیتم
-    let item =
-      layout.Tables.find(t => t.id === seat) ||
-      layout.Rooms.find(r => r.id === seat) ||
-      layout.Walls.find(w => w.id === seat);
+    const item =
+      layout.Tables?.find(t => String(t.id) === String(seat)) ||
+      layout.Rooms?.find(r => String(r.id) === String(seat)) ||
+      layout.Walls?.find(w => String(w.id) === String(seat));
 
     if (!item) {
-      return res.status(404).json({ error: 'آیتم پیدا نشد' });
+      console.log('Seat not found. seat=', seat, {
+        tablesIds: layout.Tables?.map(x => x.id),
+        roomIds: layout.Rooms?.map(x => x.id),
+        wallIds: layout.Walls?.map(x => x.id),
+      });
+      return res.status(404).json({ error: 'آیتم پیدا نشد (seat id not in layout)' });
     }
 
     // 3️⃣ آپدیت آیتم انتخاب‌شده
@@ -88,7 +93,7 @@ app.use('/api/reservationpost', require('./routes/reservationpost'));
 
 
 // 📌 اتصال به دیتابیس و ران شدن سرور فقط یک بار
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 mongoose.connect(process.env.MONGO_URL, {
   useUnifiedTopology: true,
 }).then(() => {
