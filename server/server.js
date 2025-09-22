@@ -7,9 +7,45 @@ const authRoutes = require('./routes/auth');
 const router = require('./routes/reservation');
 const Reservation = require('./models/Reservation');
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const cors = require('cors');
+
+const parseOrigins = (str) =>
+  (str || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+const ALLOWED_ORIGINS = parseOrigins(process.env.FRONTEND_ORIGIN);
+
+// برای دیباگ (اختیاری):
+console.log('CORS allowed origins:', ALLOWED_ORIGINS);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // درخواست‌های بدون origin (مثلاً curl/Postman) را اجازه بده
+    if (!origin) return callback(null, true);
+
+    // اگر لیست خالیه، همه را اجازه بده (می‌تونی سختگیرانه‌تر هم بکنی)
+    if (ALLOWED_ORIGINS.length === 0) return callback(null, true);
+
+    // اگر '*' در لیست هست، همه را اجازه بده (با credentials ناسازگاره)
+    if (ALLOWED_ORIGINS.includes('*')) return callback(null, true);
+
+    // چک کن origin داخل لیست باشه
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // رد کن
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true, // اگر Authorization/کوکی می‌فرستی
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+}));
+
+// برای preflight
+app.options('*', cors());
 
 
 // 📌 روت رزرو + ذخیره در MongoDB + ارسال ایمیل
