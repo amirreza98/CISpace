@@ -9,6 +9,9 @@ const Reservation = require('./models/Reservation');
 
 const app = express();
 
+app.use(express.json());
+
+
 const parseOrigins = (str) =>
   (str || '')
     .split(',')
@@ -47,6 +50,13 @@ app.use(cors({
 // برای preflight
 app.options('*', cors());
 
+// بعد از ساخت app و قبل از cors:
+console.log('CORS allowed origins:', ALLOWED_ORIGINS);
+
+app.use((req, res, next) => {
+  console.log('Incoming Origin:', req.headers.origin, '→', req.method, req.path);
+  next();
+});
 
 // 📌 روت رزرو + ذخیره در MongoDB + ارسال ایمیل
 app.post('/api/reserve', async (req, res) => {
