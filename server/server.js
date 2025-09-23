@@ -7,7 +7,7 @@ const authRoutes = require('./routes/auth');
 const router = require('./routes/reservation');
 const Reservation = require('./models/Reservation');
 
-const cors = require('cors');
+const app = express();
 
 const parseOrigins = (str) =>
   (str || '')
