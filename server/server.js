@@ -97,13 +97,17 @@ app.post('/api/reserve', async (req, res) => {
 
     await layout.save(); // ذخیره در MongoDB
 
-    // 4️⃣ ارسال ایمیل
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,          // یا 587
+      secure: true,       // برای 465 = true ، برای 587 = false
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, // همون App Password
       },
+      connectionTimeout: 10000,  // 10s
+      greetingTimeout: 10000,
+      socketTimeout: 20000,
     });
 
     const mailOptions = {
