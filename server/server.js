@@ -6,6 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const router = require('./routes/reservation');
 const Reservation = require('./models/Reservation');
+const { sendMail } = require('./email');
 
 const app = express();
 
@@ -97,38 +98,23 @@ app.post('/api/reserve', async (req, res) => {
 
     await layout.save(); // ذخیره در MongoDB
 
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,          // یا 587
-      secure: true,       // برای 465 = true ، برای 587 = false
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // همون App Password
-      },
-      connectionTimeout: 10000,  // 10s
-      greetingTimeout: 10000,
-      socketTimeout: 20000,
-    });
+    const html = `
+      <h2>Your Reservation is Confirmed 🎉</h2>
+      <p><strong>Booking ID:</strong> ${bookingId}</p>
+      <p><strong>Seat/Room ID:</strong> ${seat}</p>
+      <p><strong>Type:</strong> ${type}</p>
+      <p><strong>Time:</strong> ${time}</p>
+      ${note ? `<p><strong>Note:</strong> ${note}</p>` : ""}
+      <p>Status: Pending (waiting for admin)</p>
+    `;
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
+    await sendMail({
       to: email,
       subject: `Reservation Confirmation - ${bookingId}`,
-      html: `
-        <h2>Your Reservation is Confirmed 🎉</h2>
-        <p><strong>Booking ID:</strong> ${bookingId}</p>
-        <p><strong>Seat/Room ID:</strong> ${seat}</p>
-        <p><strong>Type:</strong> ${type}</p>
-        <p><strong>Time:</strong> ${time}</p>
-        ${note ? `<p><strong>Note:</strong> ${note}</p>` : ""}
-        <p>Status: Pending (waiting for admin)</p>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-
+      html,
+    });
     res.status(200).json({ message: 'Reservation saved & email sent ✅', item });
-
+    
   } catch (error) {
     console.error('❌ Error in /api/reserve:', error);
     res.status(500).json({ error: 'Failed to process reservation' });
